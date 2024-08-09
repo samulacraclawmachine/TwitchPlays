@@ -9,7 +9,7 @@ from TwitchPlays_KeyCodes import *
 ##################### GAME VARIABLES #####################
 
 # Replace this with your Twitch username. Must be all lowercase.
-TWITCH_CHANNEL = 'dougdougw' 
+TWITCH_CHANNEL = 'samulacra' 
 
 # If streaming on Youtube, set this to False
 STREAMING_ON_TWITCH = True
