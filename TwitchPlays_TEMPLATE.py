@@ -37,7 +37,7 @@ pyautogui.FAILSAFE = False
 
 ##################### ESP32 VARIABLES #####################
 
-ESP32_IP = "192.168.x.x"  # Replace with your ESP32's IP address
+ESP32_IP = "192.168.0.42"  # Replace with your ESP32's IP address
 PORT = 80
 
 def send_data_to_esp32(data):
