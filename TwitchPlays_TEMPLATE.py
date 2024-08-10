@@ -3,13 +3,14 @@ import random
 import keyboard
 import pydirectinput
 import pyautogui
+import socket
 import TwitchPlays_Connection
 from TwitchPlays_KeyCodes import *
 
 ##################### GAME VARIABLES #####################
 
 # Replace this with your Twitch username. Must be all lowercase.
-TWITCH_CHANNEL = 'samulacra' 
+TWITCH_CHANNEL = 'samulacra'  # Update with your Twitch username
 
 # If streaming on Youtube, set this to False
 STREAMING_ON_TWITCH = True
@@ -24,24 +25,29 @@ YOUTUBE_STREAM_URL = None
 
 ##################### MESSAGE QUEUE VARIABLES #####################
 
-# MESSAGE_RATE controls how fast we process incoming Twitch Chat messages. It's the number of seconds it will take to handle all messages in the queue.
-# This is used because Twitch delivers messages in "batches", rather than one at a time. So we process the messages over MESSAGE_RATE duration, rather than processing the entire batch at once.
-# A smaller number means we go through the message queue faster, but we will run out of messages faster and activity might "stagnate" while waiting for a new batch. 
-# A higher number means we go through the queue slower, and messages are more evenly spread out, but delay from the viewers' perspective is higher.
-# You can set this to 0 to disable the queue and handle all messages immediately. However, then the wait before another "batch" of messages is more noticeable.
 MESSAGE_RATE = 0.5
-# MAX_QUEUE_LENGTH limits the number of commands that will be processed in a given "batch" of messages. 
-# e.g. if you get a batch of 50 messages, you can choose to only process the first 10 of them and ignore the others.
-# This is helpful for games where too many inputs at once can actually hinder the gameplay.
-# Setting to ~50 is good for total chaos, ~5-10 is good for 2D platformers
 MAX_QUEUE_LENGTH = 20
-MAX_WORKERS = 100 # Maximum number of threads you can process at a time 
+MAX_WORKERS = 100  # Maximum number of threads you can process at a time
 
 last_time = time.time()
 message_queue = []
 thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 active_tasks = []
 pyautogui.FAILSAFE = False
+
+##################### ESP32 VARIABLES #####################
+
+ESP32_IP = "192.168.x.x"  # Replace with your ESP32's IP address
+PORT = 80
+
+def send_data_to_esp32(data):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((ESP32_IP, PORT))
+            s.sendall(data.encode('utf-8'))
+            print(f"Sent data to ESP32: {data}")
+    except Exception as e:
+        print(f"Failed to send data to ESP32: {e}")
 
 ##########################################################
 
@@ -66,6 +72,9 @@ def handle_message(message):
 
         print("Got this message from " + username + ": " + msg)
 
+        # Send the message to the ESP32
+        send_data_to_esp32(msg)
+
         # Now that you have a chat message, this is where you add your game logic.
         # Use the "HoldKey(KEYCODE)" function to permanently press and hold down a key.
         # Use the "ReleaseKey(KEYCODE)" function to release a specific keyboard key.
@@ -88,13 +97,13 @@ def handle_message(message):
 
         # If message is "drive", then permanently hold down the W key
         if msg == "drive": 
-            ReleaseKey(S) #release brake key first
-            HoldKey(W) #start permanently driving
+            ReleaseKey(S)  # release brake key first
+            HoldKey(W)  # start permanently driving
 
         # If message is "reverse", then permanently hold down the S key
         if msg == "reverse": 
-            ReleaseKey(W) #release drive key first
-            HoldKey(S) #start permanently reversing
+            ReleaseKey(W)  # release drive key first
+            HoldKey(S)  # start permanently reversing
 
         # Release both the "drive" and "reverse" keys
         if msg == "stop": 
@@ -130,11 +139,11 @@ while True:
 
     active_tasks = [t for t in active_tasks if not t.done()]
 
-    #Check for new messages
-    new_messages = t.twitch_receive_messages();
+    # Check for new messages
+    new_messages = t.twitch_receive_messages()
     if new_messages:
-        message_queue += new_messages; # New messages are added to the back of the queue
-        message_queue = message_queue[-MAX_QUEUE_LENGTH:] # Shorten the queue to only the most recent X messages
+        message_queue += new_messages  # New messages are added to the back of the queue
+        message_queue = message_queue[-MAX_QUEUE_LENGTH:]  # Shorten the queue to only the most recent X messages
 
     messages_to_handle = []
     if not message_queue:
@@ -148,7 +157,7 @@ while True:
             # Pop the messages we want off the front of the queue
             messages_to_handle = message_queue[0:n]
             del message_queue[0:n]
-            last_time = time.time();
+            last_time = time.time()
 
     # If user presses Shift+Backspace, automatically end the program
     if keyboard.is_pressed('shift+backspace'):
@@ -162,4 +171,3 @@ while True:
                 active_tasks.append(thread_pool.submit(handle_message, message))
             else:
                 print(f'WARNING: active tasks ({len(active_tasks)}) exceeds number of workers ({MAX_WORKERS}). ({len(message_queue)} messages in the queue)')
- 
