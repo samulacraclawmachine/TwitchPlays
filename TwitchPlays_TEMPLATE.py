@@ -45,7 +45,7 @@ def send_command_to_esp32(command):
     try:
         print(f"Attempting to connect to ESP32 at {ESP32_IP}:{PORT}...")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(5)  # Set a timeout for the connection attempt
+            s.settimeout(1000)  # Set a timeout for the connection attempt
             s.connect((ESP32_IP, PORT))
             print(f"Connection to ESP32 at {ESP32_IP}:{PORT} established.")
             s.sendall(command.encode('utf-8'))
