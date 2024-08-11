@@ -4,6 +4,7 @@ import keyboard
 import pydirectinput
 import pyautogui
 import socket
+import time
 import TwitchPlays_Connection
 from TwitchPlays_KeyCodes import *
 
@@ -17,7 +18,7 @@ STREAMING_ON_TWITCH = True
 
 # If you're streaming on Youtube, replace this with your Youtube's Channel ID
 # Find this by clicking your Youtube profile pic -> Settings -> Advanced Settings
-YOUTUBE_CHANNEL_ID = "YOUTUBE_CHANNEL_ID_HERE" 
+YOUTUBE_CHANNEL_ID = "YOUTUBE_CHANNEL_ID_HERE"
 
 # If you're using an Unlisted stream to test on Youtube, replace "None" below with your stream's URL in quotes.
 # Otherwise you can leave this as "None"
@@ -42,10 +43,22 @@ PORT = 8080
 
 def send_command_to_esp32(command):
     try:
+        print(f"Attempting to connect to ESP32 at {ESP32_IP}:{PORT}...")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(5)  # Set a timeout for the connection attempt
             s.connect((ESP32_IP, PORT))
+            print(f"Connection to ESP32 at {ESP32_IP}:{PORT} established.")
             s.sendall(command.encode('utf-8'))
             print(f"Sent command to ESP32: {command}")
+            
+            # Optional: Receive acknowledgment or response from ESP32
+            response = s.recv(1024).decode('utf-8')
+            print(f"Received from ESP32: {response}")
+
+    except socket.timeout:
+        print(f"Connection attempt to ESP32 at {ESP32_IP}:{PORT} timed out.")
+    except ConnectionRefusedError:
+        print(f"Connection to ESP32 at {ESP32_IP}:{PORT} refused. Is the server running?")
     except Exception as e:
         print(f"Failed to send command to ESP32: {e}")
 
