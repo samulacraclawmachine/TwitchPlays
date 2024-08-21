@@ -90,9 +90,9 @@ def handle_message(message):
             send_command_to_esp32('L')
         elif msg == "right": 
             send_command_to_esp32('R')
-        elif msg == "drive": 
+        elif msg == "forward": 
             send_command_to_esp32('F')
-        elif msg == "reverse": 
+        elif msg == "backward": 
             send_command_to_esp32('B')
         elif msg == "stop": 
             send_command_to_esp32('S')
