@@ -100,6 +100,10 @@ def handle_message(message):
             send_command_to_esp32('U')
         elif msg == "down":
             send_command_to_esp32('D')
+        elif msg == "open":
+            send_command_to_esp32('O')
+        elif msg == "close":
+            send_command_to_esp32('C')
 
     except Exception as e:
         print("Encountered exception: " + str(e))
