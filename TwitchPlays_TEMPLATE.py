@@ -72,7 +72,31 @@ def countdown_timer(start_time, interval):
             current_time -= 1
         
         accepting_input = False  # Stop accepting input after the countdown
-        print("[DEBUG] Game phase ended. Starting 15-second pre-game countdown...")
+        print("[DEBUG] Game phase ended. Executing claw sequence...")
+
+        # Sequence of claw movements when timer hits zero
+        send_command_to_esp32('D')  # Move claw down
+        time.sleep(3)  # Adjust this value for how long the claw moves down
+
+        send_command_to_esp32('C')  # Close claw
+        time.sleep(1)  # Adjust this value for how long the claw takes to close
+
+        send_command_to_esp32('U')  # Move claw back up
+        time.sleep(3)  # Adjust this value for how long the claw moves up
+
+        send_command_to_esp32('L')  # Move claw far left
+        time.sleep(3)  # Adjust this value for how long the claw moves left
+
+        send_command_to_esp32('F')  # Move claw forward
+        time.sleep(3)  # Adjust this value for how long the claw moves forward
+
+        send_command_to_esp32('O')  # Open claw
+        time.sleep(3)  # Adjust this value for how long the claw takes to open
+
+        send_command_to_esp32('B')  # Move claw far backward
+        time.sleep(3)  # Adjust this value for how long the claw moves backward
+        
+        print("[DEBUG] Claw sequence completed. Starting 15-second pre-game countdown...")
         
         # Pre-game countdown (no input phase)
         current_time = interval
@@ -86,9 +110,10 @@ def countdown_timer(start_time, interval):
             time.sleep(1)
             current_time -= 1
 
+
 if __name__ == "__main__":
-    start_time = 15  # 15 seconds countdown for game phase
-    interval = 15  # 15 seconds countdown for pre-game phase
+    start_time = 30  # 30 seconds countdown for game phase
+    interval = 30  # 30 seconds countdown for pre-game phase
 
     # Start the timer in a separate thread
     timer_thread = concurrent.futures.ThreadPoolExecutor().submit(countdown_timer, start_time, interval)
@@ -188,6 +213,7 @@ if __name__ == "__main__":
 
 
 
+# BACK UP PLAN FULL MANUAL CONTROL NO TIMER
 # import concurrent.futures
 # import random
 # import keyboard
