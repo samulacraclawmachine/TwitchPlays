@@ -76,25 +76,25 @@ def countdown_timer(start_time, interval):
 
         # Sequence of claw movements when timer hits zero
         send_command_to_esp32('D')  # Move claw down
-        time.sleep(20)  # Adjust this value for how long the claw moves down
+        time.sleep(1)  # Adjust this value for how long the claw moves down
 
         send_command_to_esp32('C')  # Close claw
         time.sleep(1)  # Adjust this value for how long the claw takes to close
 
         send_command_to_esp32('U')  # Move claw back up
-        time.sleep(20)  # Adjust this value for how long the claw moves up
+        time.sleep(2)  # Adjust this value for how long the claw moves up
 
         send_command_to_esp32('L')  # Move claw far left
-        time.sleep(20)  # Adjust this value for how long the claw moves left
+        time.sleep(1)  # Adjust this value for how long the claw moves left
 
         send_command_to_esp32('F')  # Move claw forward
-        time.sleep(20)  # Adjust this value for how long the claw moves forward
+        time.sleep(1)  # Adjust this value for how long the claw moves forward
 
         send_command_to_esp32('O')  # Open claw
-        time.sleep(1)  # Adjust this value for how long the claw takes to open
+        time.sleep(3)  # Adjust this value for how long the claw takes to open
 
         send_command_to_esp32('B')  # Move claw far backward
-        time.sleep(20)  # Adjust this value for how long the claw moves backward
+        time.sleep(1)  # Adjust this value for how long the claw moves backward
         
         print("[DEBUG] Claw sequence completed. Starting 15-second pre-game countdown...")
         
