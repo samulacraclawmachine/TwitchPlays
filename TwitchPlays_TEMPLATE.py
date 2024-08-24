@@ -74,28 +74,9 @@ def countdown_timer(start_time, interval):
         accepting_input = False  # Stop accepting input after the countdown
         print("[DEBUG] Game phase ended. Executing claw sequence...")
 
-        # Sequence of claw movements when timer hits zero
-        send_command_to_esp32('D')  # Move claw down
-        time.sleep(1)  # Adjust this value for how long the claw moves down
+        # Send the 'X' command to ESP32 to trigger the sequence on the Arduino Mega
+        send_command_to_esp32('X')  # This will trigger the sequence on the Arduino Mega
 
-        send_command_to_esp32('C')  # Close claw
-        time.sleep(1)  # Adjust this value for how long the claw takes to close
-
-        send_command_to_esp32('U')  # Move claw back up
-        time.sleep(2)  # Adjust this value for how long the claw moves up
-
-        send_command_to_esp32('L')  # Move claw far left
-        time.sleep(1)  # Adjust this value for how long the claw moves left
-
-        send_command_to_esp32('F')  # Move claw forward
-        time.sleep(1)  # Adjust this value for how long the claw moves forward
-
-        send_command_to_esp32('O')  # Open claw
-        time.sleep(3)  # Adjust this value for how long the claw takes to open
-
-        send_command_to_esp32('B')  # Move claw far backward
-        time.sleep(1)  # Adjust this value for how long the claw moves backward
-        
         print("[DEBUG] Claw sequence completed. Starting 15-second pre-game countdown...")
         
         # Pre-game countdown (no input phase)
@@ -158,6 +139,8 @@ if __name__ == "__main__":
                 send_command_to_esp32('O')
             elif msg == "close":
                 send_command_to_esp32('C')
+            elif msg == "x":
+                send_command_to_esp32('X')  # Send the 'X' command for the special sequence
 
         except Exception as e:
             print("Encountered exception: " + str(e))
@@ -200,6 +183,7 @@ if __name__ == "__main__":
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
 
 
