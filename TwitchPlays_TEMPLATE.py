@@ -58,6 +58,7 @@ def send_command_to_esp32(command):
 def countdown_timer(start_time, interval):
     global accepting_input
     while True:
+        # Countdown for game phase (input accepted)
         current_time = start_time
         accepting_input = True  # Start accepting input during the countdown
         while current_time >= 0:
@@ -65,18 +66,29 @@ def countdown_timer(start_time, interval):
             time_str = f"{minutes:02}:{seconds:02}"
 
             with open("countdown.txt", "w") as file:
-                file.write(time_str)
+                file.write(f"Game in Progress: {time_str}")
             
             time.sleep(1)
             current_time -= 1
         
         accepting_input = False  # Stop accepting input after the countdown
-        print("[DEBUG] Timer ended. Starting 15-second no-input phase...")
-        time.sleep(interval)  # 15-second pause before restarting input
+        print("[DEBUG] Game phase ended. Starting 15-second pre-game countdown...")
+        
+        # Pre-game countdown (no input phase)
+        current_time = interval
+        while current_time >= 0:
+            minutes, seconds = divmod(current_time, 60)
+            time_str = f"{minutes:02}:{seconds:02}"
+
+            with open("countdown.txt", "w") as file:
+                file.write(f"Next Game Starts In: {time_str}")
+            
+            time.sleep(1)
+            current_time -= 1
 
 if __name__ == "__main__":
-    start_time = 20  # 20 seconds countdown
-    interval = 20  # 20 seconds pause before restarting input
+    start_time = 15  # 15 seconds countdown for game phase
+    interval = 15  # 15 seconds countdown for pre-game phase
 
     # Start the timer in a separate thread
     timer_thread = concurrent.futures.ThreadPoolExecutor().submit(countdown_timer, start_time, interval)
@@ -163,6 +175,7 @@ if __name__ == "__main__":
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
 
 
