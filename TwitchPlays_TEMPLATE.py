@@ -76,25 +76,25 @@ def countdown_timer(start_time, interval):
 
         # Sequence of claw movements when timer hits zero
         send_command_to_esp32('D')  # Move claw down
-        time.sleep(3)  # Adjust this value for how long the claw moves down
+        time.sleep(5)  # Adjust this value for how long the claw moves down
 
         send_command_to_esp32('C')  # Close claw
         time.sleep(1)  # Adjust this value for how long the claw takes to close
 
         send_command_to_esp32('U')  # Move claw back up
-        time.sleep(3)  # Adjust this value for how long the claw moves up
+        time.sleep(5)  # Adjust this value for how long the claw moves up
 
         send_command_to_esp32('L')  # Move claw far left
-        time.sleep(3)  # Adjust this value for how long the claw moves left
+        time.sleep(4)  # Adjust this value for how long the claw moves left
 
         send_command_to_esp32('F')  # Move claw forward
-        time.sleep(3)  # Adjust this value for how long the claw moves forward
+        time.sleep(4)  # Adjust this value for how long the claw moves forward
 
         send_command_to_esp32('O')  # Open claw
-        time.sleep(3)  # Adjust this value for how long the claw takes to open
+        time.sleep(1)  # Adjust this value for how long the claw takes to open
 
         send_command_to_esp32('B')  # Move claw far backward
-        time.sleep(3)  # Adjust this value for how long the claw moves backward
+        time.sleep(4)  # Adjust this value for how long the claw moves backward
         
         print("[DEBUG] Claw sequence completed. Starting 15-second pre-game countdown...")
         
@@ -113,7 +113,7 @@ def countdown_timer(start_time, interval):
 
 if __name__ == "__main__":
     start_time = 30  # 30 seconds countdown for game phase
-    interval = 31  # 31 seconds countdown for pre-game phase
+    interval = 30  # 30 seconds countdown for pre-game phase
 
     # Start the timer in a separate thread
     timer_thread = concurrent.futures.ThreadPoolExecutor().submit(countdown_timer, start_time, interval)
@@ -200,6 +200,7 @@ if __name__ == "__main__":
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
 
 
