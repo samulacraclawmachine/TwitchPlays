@@ -131,14 +131,14 @@ if __name__ == "__main__":
                 send_command_to_esp32('B')
             elif msg == "stop": 
                 send_command_to_esp32('S')
-            elif msg == "up":
-                send_command_to_esp32('U')
-            elif msg == "down":
-                send_command_to_esp32('D')
-            elif msg == "open":
-                send_command_to_esp32('O')
-            elif msg == "close":
-                send_command_to_esp32('C')
+            # elif msg == "up":
+            #     send_command_to_esp32('U')
+            # elif msg == "down":
+            #     send_command_to_esp32('D')
+            # elif msg == "open":
+            #     send_command_to_esp32('O')
+            # elif msg == "close":
+            #     send_command_to_esp32('C')
             elif msg == "x":
                 send_command_to_esp32('X')  # Send the 'X' command for the special sequence
 
