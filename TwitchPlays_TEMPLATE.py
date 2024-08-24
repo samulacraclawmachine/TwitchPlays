@@ -139,7 +139,7 @@ if __name__ == "__main__":
             #     send_command_to_esp32('O')
             # elif msg == "close":
             #     send_command_to_esp32('C')
-            elif msg == "x":
+            elif msg == "793458hidus":
                 send_command_to_esp32('X')  # Send the 'X' command for the special sequence
 
         except Exception as e:
@@ -183,6 +183,7 @@ if __name__ == "__main__":
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
 
 
