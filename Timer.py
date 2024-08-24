@@ -27,6 +27,6 @@ def countdown_timer(start_time, interval):
             current_time -= 1
 
 if __name__ == "__main__":
-    start_time = 5 * 60  # 5 minutes countdown
+    start_time = 10  # 5 minutes countdown
     interval = 10  # 10 seconds interval countdown
     countdown_timer(start_time, interval)
