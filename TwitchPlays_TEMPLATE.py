@@ -1,6 +1,9 @@
 import time
 import concurrent.futures
+import random
 import keyboard
+import pydirectinput
+import pyautogui
 import socket
 import TwitchPlays_Connection
 from TwitchPlays_KeyCodes import *
@@ -22,6 +25,7 @@ last_time = time.time()
 message_queue = []
 thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 active_tasks = []
+pyautogui.FAILSAFE = False
 
 ##################### ESP32 VARIABLES #####################
 
@@ -53,7 +57,7 @@ def send_command_to_esp32(command):
         print(f"Failed to send command to ESP32: {e}")
 
 def countdown_timer(start_time, interval):
-    global accepting_input
+    global accepting_input, sequence_running
     while True:
         # Countdown for game phase (input accepted)
         current_time = start_time
@@ -74,12 +78,13 @@ def countdown_timer(start_time, interval):
         # Display "Nice Try!" message
         display_message("Nice try!", 2)  # Display "Nice try!" for 2 seconds
 
-        # Execute special sequence (X)
-        execute_special_sequence()
+        # Send the 'X' command to ESP32 to trigger the sequence on the Arduino Mega
+        sequence_running = True
+        send_command_to_esp32('X')  # This will trigger the sequence on the Arduino Mega
+        sequence_running = False
 
-        # Display "Next game starts in..." message
-        display_message("Next game starts in 3 seconds...", 3)  # Display for 3 seconds
-
+        print("[DEBUG] Claw sequence completed. Starting 15-second pre-game countdown...")
+        
         # Pre-game countdown (no input phase)
         current_time = interval
         while current_time >= 0:
@@ -96,34 +101,6 @@ def display_message(message, duration):
     with open("countdown.txt", "w") as file:
         file.write(message)
     time.sleep(duration)  # Keep the message displayed for the specified duration
-
-def execute_special_sequence():
-    global sequence_running
-    sequence_running = True
-
-    send_command_to_esp32('D')  # Move claw down
-    time.sleep(5)  # Adjust this value for how long the claw moves down
-
-    send_command_to_esp32('C')  # Close claw
-    time.sleep(1)  # Adjust this value for how long the claw takes to close
-
-    send_command_to_esp32('U')  # Move claw back up
-    time.sleep(5)  # Adjust this value for how long the claw moves up
-
-    send_command_to_esp32('L')  # Move claw far left
-    time.sleep(5)  # Adjust this value for how long the claw moves left
-
-    send_command_to_esp32('F')  # Move claw forward
-    time.sleep(5)  # Adjust this value for how long the claw moves forward
-
-    send_command_to_esp32('O')  # Open claw
-    time.sleep(1)  # Adjust this value for how long the claw takes to open
-
-    send_command_to_esp32('B')  # Move claw far backward
-    time.sleep(5)  # Adjust this value for how long the claw moves backward
-
-    print("[DEBUG] Claw sequence completed.")
-    sequence_running = False
 
 if __name__ == "__main__":
     start_time = 30  # 30 seconds countdown for game phase
@@ -172,6 +149,8 @@ if __name__ == "__main__":
             #     send_command_to_esp32('O')
             # elif msg == "close":
             #     send_command_to_esp32('C')
+            elif msg == "x":
+                send_command_to_esp32('X')  # Send the 'X' command for the special sequence
 
         except Exception as e:
             print("Encountered exception: " + str(e))
@@ -214,6 +193,7 @@ if __name__ == "__main__":
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
 
             
