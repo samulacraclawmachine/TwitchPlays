@@ -75,8 +75,8 @@ def countdown_timer(start_time, interval):
         time.sleep(interval)  # 15-second pause before restarting input
 
 if __name__ == "__main__":
-    start_time = 15  # 15 seconds countdown
-    interval = 15  # 15 seconds pause before restarting input
+    start_time = 20  # 20 seconds countdown
+    interval = 20  # 20 seconds pause before restarting input
 
     # Start the timer in a separate thread
     timer_thread = concurrent.futures.ThreadPoolExecutor().submit(countdown_timer, start_time, interval)
@@ -128,10 +128,9 @@ if __name__ == "__main__":
     while True:
         active_tasks = [t for t in active_tasks if not t.done()]
 
-        # Only process messages if we are in the input phase
+        # Check for new messages
+        new_messages = t.twitch_receive_messages()
         if accepting_input:
-            # Check for new messages during the 15-second input phase
-            new_messages = t.twitch_receive_messages()
             if new_messages:
                 message_queue += new_messages  # New messages are added to the back of the queue
                 message_queue = message_queue[-MAX_QUEUE_LENGTH:]  # Shorten the queue to only the most recent X messages
@@ -155,10 +154,16 @@ if __name__ == "__main__":
                         active_tasks.append(thread_pool.submit(handle_message, message))
                     else:
                         print(f'WARNING: active tasks ({len(active_tasks)}) exceeds number of workers ({MAX_WORKERS}). ({len(message_queue)} messages in the queue)')
-        
+        else:
+            # Discard any new messages during the no-input phase
+            if new_messages:
+                print(f"[DEBUG] Discarding {len(new_messages)} messages received during no-input phase.")
+                new_messages.clear()  # Clear the new_messages list to discard them
+
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
 
 
