@@ -33,7 +33,6 @@ ESP32_IP = "192.168.0.46"  # Replace with your ESP32's IP address
 PORT = 8080
 
 accepting_input = False  # This flag controls when input is accepted
-sequence_running = False  # Flag to indicate if the special sequence is running
 
 def send_command_to_esp32(command):
     try:
@@ -57,7 +56,7 @@ def send_command_to_esp32(command):
         print(f"Failed to send command to ESP32: {e}")
 
 def countdown_timer(start_time, interval):
-    global accepting_input, sequence_running
+    global accepting_input
     while True:
         # Countdown for game phase (input accepted)
         current_time = start_time
@@ -75,13 +74,8 @@ def countdown_timer(start_time, interval):
         accepting_input = False  # Stop accepting input after the countdown
         print("[DEBUG] Game phase ended. Executing claw sequence...")
 
-        # Display "Nice Try!" message
-        display_message("Nice try!", 2)  # Display "Nice try!" for 2 seconds
-
         # Send the 'X' command to ESP32 to trigger the sequence on the Arduino Mega
-        sequence_running = True
         send_command_to_esp32('X')  # This will trigger the sequence on the Arduino Mega
-        sequence_running = False
 
         print("[DEBUG] Claw sequence completed. Starting 15-second pre-game countdown...")
         
@@ -97,10 +91,6 @@ def countdown_timer(start_time, interval):
             time.sleep(1)
             current_time -= 1
 
-def display_message(message, duration):
-    with open("countdown.txt", "w") as file:
-        file.write(message)
-    time.sleep(duration)  # Keep the message displayed for the specified duration
 
 if __name__ == "__main__":
     start_time = 30  # 30 seconds countdown for game phase
@@ -160,7 +150,7 @@ if __name__ == "__main__":
 
         # Check for new messages
         new_messages = t.twitch_receive_messages()
-        if accepting_input and not sequence_running:
+        if accepting_input:
             if new_messages:
                 message_queue += new_messages  # New messages are added to the back of the queue
                 message_queue = message_queue[-MAX_QUEUE_LENGTH:]  # Shorten the queue to only the most recent X messages
@@ -185,14 +175,15 @@ if __name__ == "__main__":
                     else:
                         print(f'WARNING: active tasks ({len(active_tasks)}) exceeds number of workers ({MAX_WORKERS}). ({len(message_queue)} messages in the queue)')
         else:
-            # Discard any new messages during the no-input phase or if the sequence is running
+            # Discard any new messages during the no-input phase
             if new_messages:
-                print(f"[DEBUG] Discarding {len(new_messages)} messages received during no-input phase or while sequence is running.")
+                print(f"[DEBUG] Discarding {len(new_messages)} messages received during no-input phase.")
                 new_messages.clear()  # Clear the new_messages list to discard them
 
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
 
 
