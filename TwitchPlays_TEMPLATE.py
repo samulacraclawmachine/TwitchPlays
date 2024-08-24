@@ -32,6 +32,8 @@ pyautogui.FAILSAFE = False
 ESP32_IP = "192.168.0.46"  # Replace with your ESP32's IP address
 PORT = 8080
 
+accepting_input = False  # This flag controls when input is accepted
+
 def send_command_to_esp32(command):
     try:
         print(f"Attempting to connect to ESP32 at {ESP32_IP}:{PORT}...")
@@ -54,8 +56,10 @@ def send_command_to_esp32(command):
         print(f"Failed to send command to ESP32: {e}")
 
 def countdown_timer(start_time, interval):
+    global accepting_input
     while True:
         current_time = start_time
+        accepting_input = True  # Start accepting input during the countdown
         while current_time >= 0:
             minutes, seconds = divmod(current_time, 60)
             time_str = f"{minutes:02}:{seconds:02}"
@@ -66,10 +70,9 @@ def countdown_timer(start_time, interval):
             time.sleep(1)
             current_time -= 1
         
-        # Reset the timer
+        accepting_input = False  # Stop accepting input after the countdown
         print("[DEBUG] Timer ended. Starting 15-second no-input phase...")
-        time.sleep(interval)
-        current_time = start_time
+        time.sleep(interval)  # 15-second pause before restarting input
 
 if __name__ == "__main__":
     start_time = 15  # 15 seconds countdown
@@ -125,35 +128,38 @@ if __name__ == "__main__":
     while True:
         active_tasks = [t for t in active_tasks if not t.done()]
 
-        # Check for new messages during the 15-second input phase
-        new_messages = t.twitch_receive_messages()
-        if new_messages:
-            message_queue += new_messages  # New messages are added to the back of the queue
-            message_queue = message_queue[-MAX_QUEUE_LENGTH:]  # Shorten the queue to only the most recent X messages
+        # Only process messages if we are in the input phase
+        if accepting_input:
+            # Check for new messages during the 15-second input phase
+            new_messages = t.twitch_receive_messages()
+            if new_messages:
+                message_queue += new_messages  # New messages are added to the back of the queue
+                message_queue = message_queue[-MAX_QUEUE_LENGTH:]  # Shorten the queue to only the most recent X messages
 
-        messages_to_handle = []
-        if not message_queue:
-            last_time = time.time()
-        else:
-            r = 1 if MESSAGE_RATE == 0 else (time.time() - last_time) / MESSAGE_RATE
-            n = int(r * len(message_queue))
-            if n > 0:
-                messages_to_handle = message_queue[0:n]
-                del message_queue[0:n]
+            messages_to_handle = []
+            if not message_queue:
                 last_time = time.time()
+            else:
+                r = 1 if MESSAGE_RATE == 0 else (time.time() - last_time) / MESSAGE_RATE
+                n = int(r * len(message_queue))
+                if n > 0:
+                    messages_to_handle = message_queue[0:n]
+                    del message_queue[0:n]
+                    last_time = time.time()
 
+            if not messages_to_handle:
+                continue
+            else:
+                for message in messages_to_handle:
+                    if len(active_tasks) <= MAX_WORKERS:
+                        active_tasks.append(thread_pool.submit(handle_message, message))
+                    else:
+                        print(f'WARNING: active tasks ({len(active_tasks)}) exceeds number of workers ({MAX_WORKERS}). ({len(message_queue)} messages in the queue)')
+        
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
 
-        if not messages_to_handle:
-            continue
-        else:
-            for message in messages_to_handle:
-                if len(active_tasks) <= MAX_WORKERS:
-                    active_tasks.append(thread_pool.submit(handle_message, message))
-                else:
-                    print(f'WARNING: active tasks ({len(active_tasks)}) exceeds number of workers ({MAX_WORKERS}). ({len(message_queue)} messages in the queue)')
 
 
 
