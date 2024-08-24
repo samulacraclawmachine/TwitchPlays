@@ -1,9 +1,6 @@
 import time
 import concurrent.futures
-import random
 import keyboard
-import pydirectinput
-import pyautogui
 import socket
 import TwitchPlays_Connection
 from TwitchPlays_KeyCodes import *
@@ -25,7 +22,6 @@ last_time = time.time()
 message_queue = []
 thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 active_tasks = []
-pyautogui.FAILSAFE = False
 
 ##################### ESP32 VARIABLES #####################
 
@@ -76,7 +72,7 @@ def countdown_timer(start_time, interval):
         print("[DEBUG] Game phase ended. Executing claw sequence...")
 
         # Display "Nice Try!" message
-        display_message("Nice try!", 15)  # Display "Nice try!" for 15 seconds
+        display_message("Nice try!", 2)  # Display "Nice try!" for 2 seconds
 
         # Execute special sequence (X)
         execute_special_sequence()
@@ -106,25 +102,25 @@ def execute_special_sequence():
     sequence_running = True
 
     send_command_to_esp32('D')  # Move claw down
-    time.sleep(20)  # Adjust this value for how long the claw moves down
+    time.sleep(5)  # Adjust this value for how long the claw moves down
 
     send_command_to_esp32('C')  # Close claw
     time.sleep(1)  # Adjust this value for how long the claw takes to close
 
     send_command_to_esp32('U')  # Move claw back up
-    time.sleep(20)  # Adjust this value for how long the claw moves up
+    time.sleep(5)  # Adjust this value for how long the claw moves up
 
     send_command_to_esp32('L')  # Move claw far left
-    time.sleep(20)  # Adjust this value for how long the claw moves left
+    time.sleep(5)  # Adjust this value for how long the claw moves left
 
     send_command_to_esp32('F')  # Move claw forward
-    time.sleep(20)  # Adjust this value for how long the claw moves forward
+    time.sleep(5)  # Adjust this value for how long the claw moves forward
 
     send_command_to_esp32('O')  # Open claw
     time.sleep(1)  # Adjust this value for how long the claw takes to open
 
     send_command_to_esp32('B')  # Move claw far backward
-    time.sleep(20)  # Adjust this value for how long the claw moves backward
+    time.sleep(5)  # Adjust this value for how long the claw moves backward
 
     print("[DEBUG] Claw sequence completed.")
     sequence_running = False
@@ -218,6 +214,7 @@ if __name__ == "__main__":
         # If user presses Shift+Backspace, automatically end the program
         if keyboard.is_pressed('shift+backspace'):
             exit()
+
 
             
 
