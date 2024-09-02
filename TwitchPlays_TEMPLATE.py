@@ -29,7 +29,7 @@ pyautogui.FAILSAFE = False
 
 ##################### ESP32 VARIABLES #####################
 
-ESP32_IP = "10.1.10.81"  # Replace with your ESP32's IP address
+ESP32_IP = "10.1.10.82"  # Replace with your ESP32's IP address
 PORT = 8080
 
 accepting_input = False  # This flag controls when input is accepted
