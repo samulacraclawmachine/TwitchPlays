@@ -66,7 +66,7 @@ def countdown_timer(start_time, interval):
             time_str = f"{minutes:02}:{seconds:02}"
 
             with open("countdown.txt", "w") as file:
-                file.write(f"Game in Progress: {time_str}")
+                file.write(f"Claw Now Active: {time_str}")
             
             time.sleep(1)
             current_time -= 1
@@ -86,15 +86,15 @@ def countdown_timer(start_time, interval):
             time_str = f"{minutes:02}:{seconds:02}"
 
             with open("countdown.txt", "w") as file:
-                file.write(f"Next Game Starts In: {time_str}")
+                file.write(f"Claw Recalibrating: {time_str}")
             
             time.sleep(1)
             current_time -= 1
 
 
 if __name__ == "__main__":
-    start_time = 30  # 30 seconds countdown for game phase
-    interval = 30  # 30 seconds countdown for pre-game phase
+    start_time = 60  # 30 seconds countdown for game phase
+    interval = 120  # 30 seconds countdown for pre-game phase
 
     # Start the timer in a separate thread
     timer_thread = concurrent.futures.ThreadPoolExecutor().submit(countdown_timer, start_time, interval)
@@ -131,10 +131,10 @@ if __name__ == "__main__":
                 send_command_to_esp32('B')
             elif msg == "stop": 
                 send_command_to_esp32('S')
-            elif msg == "up":
-                send_command_to_esp32('U')
-            elif msg == "down":
-                send_command_to_esp32('D')
+            # elif msg == "up":
+            #     send_command_to_esp32('U')
+            # elif msg == "down":
+            #     send_command_to_esp32('D')
             # elif msg == "open":
             #     send_command_to_esp32('O')
             # elif msg == "close":
