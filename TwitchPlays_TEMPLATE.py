@@ -94,7 +94,7 @@ def countdown_timer(start_time, interval):
 
 if __name__ == "__main__":
     start_time = 60  # 30 seconds countdown for game phase
-    interval = 120  # 30 seconds countdown for pre-game phase
+    interval = 90  # 30 seconds countdown for pre-game phase
 
     # Start the timer in a separate thread
     timer_thread = concurrent.futures.ThreadPoolExecutor().submit(countdown_timer, start_time, interval)
