@@ -131,7 +131,7 @@ if __name__ == "__main__":
                 send_command_to_esp32('B')
             elif msg == "stop": 
                 send_command_to_esp32('S')
-            elif msg == "GLHF!":
+            elif msg == "glhf!":
                 send_command_to_esp32('U')
             # elif msg == "down":
             #     send_command_to_esp32('D')
